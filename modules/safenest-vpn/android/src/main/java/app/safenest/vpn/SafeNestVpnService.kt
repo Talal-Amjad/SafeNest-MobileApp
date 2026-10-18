@@ -87,9 +87,19 @@ class SafeNestVpnService : VpnService() {
       }
       if (n <= 0) continue
       val query = DnsPacket.parseQuery(packet, n) ?: continue
-      val decision = policy.get().decide(query.name)
+      val name = Policy.normalize(query.name)
+      // Keep browsers on this resolver: refuse their own DNS-over-HTTPS.
+      if (name == DohProviders.FIREFOX_CANARY) {
+        write(output, DnsPacket.wrapResponse(query, DnsPacket.nxdomain(query)))
+        continue
+      }
+      if (DohProviders.isProvider(name)) {
+        write(output, DnsPacket.wrapResponse(query, DnsPacket.blockedResponse(query)))
+        continue
+      }
+      val decision = policy.get().decide(name)
       if (decision.blocked) {
-        recordBlocked(Policy.normalize(query.name), decision.ruleId ?: "")
+        recordBlocked(name, decision.ruleId ?: "")
         write(output, DnsPacket.wrapResponse(query, DnsPacket.blockedResponse(query)))
       } else {
         workers.execute { write(output, DnsPacket.wrapResponse(query, forward(query))) }

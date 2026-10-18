@@ -70,10 +70,15 @@ object DnsPacket {
   }
 
   /** SERVFAIL: used when no upstream answered, so lookups fail closed. */
-  fun servfail(q: Query): ByteArray {
+  fun servfail(q: Query): ByteArray = errorResponse(q, rcode = 2)
+
+  /** NXDOMAIN: the name doesn't exist (used for Firefox's DoH canary). */
+  fun nxdomain(q: Query): ByteArray = errorResponse(q, rcode = 3)
+
+  private fun errorResponse(q: Query, rcode: Int): ByteArray {
     val out = q.dns.copyOf(q.questionEnd)
     out[2] = (0x80 or (q.dns[2].toInt() and 0x01)).toByte()
-    out[3] = 0x82.toByte()
+    out[3] = (0x80 or rcode).toByte()
     for (i in 6 until 12) out[i] = 0
     return out
   }

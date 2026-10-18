@@ -18,7 +18,7 @@ SafeNest on phones is a parental-control tool used **openly**, with the child's 
 | Child turns off the Android VPN, or starts another VPN | `onRevoke` stops the filter; the next check-in reports it as off (no applied version), so the dashboard stops saying "Rules up to date" | blocking stops until someone turns it back on; the parent sees it, but there's no instant alert yet (task 10) |
 | Child uninstalls the app | device goes offline in the dashboard | Android can't prevent uninstalling without device-owner mode; on iOS, Family Sharing authorization lets a parent stop it |
 | Private DNS (DNS over TLS) set to "strict" on Android | not filtered | documented; device-owner or managed-profile deployment would close it |
-| Browser or app DNS over HTTPS | not covered yet: unlike the Windows app, the phone filter has no list of DoH providers to block | a browser using its own DoH resolver bypasses filtering; adding the provider list is planned |
+| Browser or app DNS over HTTPS | the Android filter answers well-known DoH endpoints as blocked (same list as the Windows app) and gives Firefox's canary NXDOMAIN, so browsers fall back to the system resolver | a custom or unlisted DoH endpoint bypasses filtering |
 | VPN, proxy or Tor apps | not covered: one VPN at a time on Android | documented limitation |
 | Sites opened by IP address | not covered (DNS-based filtering) | documented limitation |
 | Forged "blocked" reports | server accepts an event only if its own policy would block that domain for that device | none known |
