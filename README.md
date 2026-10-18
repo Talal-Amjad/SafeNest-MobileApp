@@ -37,7 +37,7 @@ The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXP
 | 1 | Bootstrap: Expo + TypeScript, theme tokens, lint, tests, CI | ✅ |
 | 2 | API client, typed errors, secure storage | ✅ |
 | 3 | Parent sign-in and app shell | ✅ |
-| 4 | Parent home: children, devices, honest status | |
+| 4 | Parent home: children, devices, honest status | ✅ |
 | 5 | Activity feed and rules (block/allow per child) | |
 | 6 | Add device: one-time code with countdown and live "linked" | |
 | 7 | Child mode: link this phone, status, transparency page | |
