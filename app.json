@@ -42,7 +42,7 @@
       "apiUrl": "https://api.safenest.app"
     },
     "experiments": {
-      "typedRoutes": true,
+      "typedRoutes": false,
       "reactCompiler": true
     }
   }
