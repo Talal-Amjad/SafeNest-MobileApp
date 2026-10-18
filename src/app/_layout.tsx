@@ -1,8 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import * as Notifications from "expo-notifications";
+import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isUnauthorized } from "@/api";
+import { routeForNotification } from "@/state/push";
 import { SessionProvider } from "@/state/session";
 import { usePalette } from "@/theme";
 
@@ -19,6 +21,15 @@ export default function RootLayout() {
         },
       }),
   );
+  // Tapping a blocked-site alert opens the Activity tab.
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((res) => {
+      const route = routeForNotification(res.notification.request.content.data);
+      if (route) router.push(route);
+    });
+    return () => sub.remove();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider>

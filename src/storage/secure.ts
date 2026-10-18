@@ -32,6 +32,7 @@ export const KEYS = {
   role: "safenest.role",
   device: "safenest.device",
   installId: "safenest.install_id",
+  pushToken: "safenest.push_token",
 } as const;
 
 export type Role = "parent" | "child";

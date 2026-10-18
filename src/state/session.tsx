@@ -2,6 +2,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { isUnauthorized, parentApi, type Me } from "@/api";
 import { KEYS, readJSON, remove, writeJSON, type Role } from "@/storage/secure";
+import { disablePush, enablePush } from "./push";
+
+// Push is best effort: alerts still arrive by email if it fails.
+const tryEnablePush = () => void enablePush().catch((err) => console.warn("push registration failed", err));
 
 type Session =
   | { status: "loading" }
@@ -31,6 +35,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const loadParent = useCallback(async () => {
     try {
       setSession({ status: "parent", me: await parentApi.me() });
+      tryEnablePush();
     } catch (err) {
       // Offline or signed out: either way the sign-in screen explains.
       setSession({ status: "parent-signed-out" });
@@ -57,8 +62,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       signIn: async (email, password) => {
         const me = await parentApi.login(email.trim(), password);
         setSession({ status: "parent", me });
+        tryEnablePush();
       },
       signOut: async () => {
+        await disablePush();
         await parentApi.logout().catch(() => undefined);
         queryClient.clear();
         setSession({ status: "parent-signed-out" });

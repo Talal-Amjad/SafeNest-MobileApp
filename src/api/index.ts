@@ -44,6 +44,10 @@ export const parentApi = {
   createEnrollment: (childId: string) =>
     request<EnrollmentCreated>("/device-enrollments", { method: "POST", body: { child_id: childId } }),
   enrollments: () => request<Enrollment[]>("/device-enrollments"),
+  registerPushToken: (token: string, platform: "android" | "ios") =>
+    request<void>("/push-tokens", { method: "PUT", body: { token, platform } }),
+  removePushToken: (token: string) => request<void>("/push-tokens/remove", { method: "POST", body: { token } }),
+
   cancelEnrollment: (id: string) =>
     request<Enrollment>(`/device-enrollments/${encodeURIComponent(id)}`, { method: "DELETE" }),
 };
