@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- SafeNest mark (same as the web app's LogoMark), brand colors as hex. -->
+  <path d="M16 2.5 4.5 6.8v8.4c0 7.3 4.9 12.6 11.5 14.3 6.6-1.7 11.5-7 11.5-14.3V6.8L16 2.5Z" fill="#00777A"/>
+  <path d="M9.5 15.5c1.3 3.6 3.8 5.5 6.5 5.5s5.2-1.9 6.5-5.5" fill="none" stroke="#F6FCFC" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="16" cy="11.5" r="2.4" fill="#F2B23E"/>
+</svg>
