@@ -34,6 +34,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="sign-in" options={{ title: "Sign in" }} />
           <Stack.Screen name="(parent)" options={{ headerShown: false }} />
+          <Stack.Screen name="add-device" options={{ title: "Add device", presentation: "modal" }} />
         </Stack>
       </SessionProvider>
     </QueryClientProvider>

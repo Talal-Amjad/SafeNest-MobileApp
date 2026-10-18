@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
 import { RefreshControl, StyleSheet, Text, View } from "react-native";
 import { errorMessage, parentApi, type Device } from "@/api";
-import { Badge, Body, Card, Loading, Notice, Screen, Title } from "@/components/ui";
+import { Badge, Body, Button, Card, Loading, Notice, Screen, Title } from "@/components/ui";
 import { connectionBadge, PLATFORM_LABEL, policyBadge, summarize, timeAgo } from "@/lib/status";
 import { useSession } from "@/state/session";
 import { space, usePalette } from "@/theme";
@@ -46,6 +47,7 @@ export default function Home() {
           <Body>Add a child profile on the SafeNest website to get started.</Body>
         </Card>
       )}
+      {summaries.length > 0 && <Button title="Add a device" onPress={() => router.push("/add-device")} />}
       {summaries.map(({ child, devices: list }) => (
         <Card key={child.id}>
           <Text style={[styles.child, { color: c.foreground }]}>{child.display_name}</Text>
