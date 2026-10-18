@@ -118,7 +118,7 @@ export default function AddDevice() {
             ))}
           </View>
           <Notice tone="neutral">
-            The SafeNest app for Windows uses these codes today. Linking Android and iPhone devices is in development.
+            Codes work for the SafeNest app on Windows, which blocks sites in every browser, and on Android and iPhone, where the app links and checks in but can&apos;t block sites yet.
           </Notice>
           {create.error && <Notice tone="danger">{errorMessage(create.error)}</Notice>}
           <Button

@@ -40,7 +40,7 @@ The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXP
 | 4 | Parent home: children, devices, honest status | ✅ |
 | 5 | Activity feed and rules (block/allow per child) | ✅ |
 | 6 | Add device: one-time code with countdown and live "linked" | ✅ |
-| 7 | Child mode: link this phone, status, transparency page | |
+| 7 | Child mode: link this phone, status, transparency page | ✅ |
 | 8 | Android enforcement: VPN-based DNS filter (native module) | |
 | 9 | iOS enforcement: Screen Time APIs (entitlement-gated) | |
 | 10 | Push notifications for blocked-site alerts | |

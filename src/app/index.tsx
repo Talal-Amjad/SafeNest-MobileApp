@@ -1,7 +1,7 @@
 import { Redirect } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { LogoMark } from "@/components/logo";
-import { Body, Button, Card, Loading, Notice } from "@/components/ui";
+import { Body, Button, Card, Loading } from "@/components/ui";
 import { useSession } from "@/state/session";
 import { space, usePalette } from "@/theme";
 
@@ -13,6 +13,7 @@ export default function Start() {
   if (session.status === "loading") return <Loading />;
   if (session.status === "parent") return <Redirect href="/(parent)/home" />;
   if (session.status === "parent-signed-out") return <Redirect href="/sign-in" />;
+  if (session.status === "child") return <Redirect href="/child" />;
 
   return (
     <View style={[styles.root, { backgroundColor: c.background }]}>
@@ -33,14 +34,7 @@ export default function Start() {
       <Card>
         <Text style={[styles.cardTitle, { color: c.foreground }]}>This is my child&apos;s phone</Text>
         <Body muted>Link this phone to your child&apos;s profile with a code from the dashboard.</Body>
-        {session.status === "child" ? (
-          <Notice tone="neutral">Linking a child&apos;s phone arrives in the next update.</Notice>
-        ) : (
-          <Button title="Set up a child's phone" variant="secondary" onPress={() => session.chooseRole("child")} />
-        )}
-        {session.status === "child" && (
-          <Button title="Choose again" variant="secondary" onPress={session.resetRole} />
-        )}
+        <Button title="Set up a child's phone" variant="secondary" onPress={() => session.chooseRole("child")} />
       </Card>
     </View>
   );
