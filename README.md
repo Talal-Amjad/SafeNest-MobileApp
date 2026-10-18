@@ -47,4 +47,4 @@ The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXP
 | 9 | iOS enforcement: Screen Time APIs (entitlement-gated) | ✅ code complete; off until Apple grants the Family Controls entitlement |
 | 10 | Push notifications for blocked-site alerts | |
 | 11 | Release: EAS build profiles, store listings, privacy labels | ✅ |
-| 12 | End-to-end test and threat model | |
+| 12 | End-to-end test and threat model | threat model and test plan ✅; on-device run pending |
