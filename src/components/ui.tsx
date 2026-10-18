@@ -165,3 +165,25 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 12, fontWeight: "600" },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
 });
+
+/** Toggleable pill (filters, multi-select). */
+export function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const c = usePalette();
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected }}
+      onPress={onPress}
+      style={{
+        borderWidth: 1,
+        borderColor: selected ? c.primary : c.border,
+        backgroundColor: selected ? c.primarySoft : c.surface,
+        borderRadius: 999,
+        paddingHorizontal: space(3),
+        paddingVertical: space(1.5),
+      }}
+    >
+      <Text style={{ color: selected ? c.primary : c.foreground, fontWeight: "500" }}>{label}</Text>
+    </Pressable>
+  );
+}

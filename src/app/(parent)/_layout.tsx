@@ -30,6 +30,8 @@ export default function ParentLayout() {
       })}
     >
       <Tabs.Screen name="home" options={{ title: "Home" }} />
+      <Tabs.Screen name="activity" options={{ title: "Activity" }} />
+      <Tabs.Screen name="rules" options={{ title: "Rules" }} />
       <Tabs.Screen name="settings" options={{ title: "Settings" }} />
     </Tabs>
   );
