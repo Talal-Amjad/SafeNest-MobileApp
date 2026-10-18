@@ -23,6 +23,8 @@ export type EnrollmentCompleteOut = S["EnrollmentCompleteOut"];
 export type Policy = S["PolicyOut"];
 export type HeartbeatIn = S["HeartbeatIn"];
 export type HeartbeatOut = S["HeartbeatOut"];
+export type EventIn = S["EventIn"];
+export type EventsOut = S["EventsOut"];
 
 export type RuleAction = Rule["action"];
 export type RuleKind = Rule["kind"];

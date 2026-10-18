@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+  <application>
+    <!-- Only the system can bind (BIND_VPN_SERVICE). The persistent
+         notification keeps the filter visible to whoever uses the phone. -->
+    <service
+      android:name="app.safenest.vpn.SafeNestVpnService"
+      android:exported="false"
+      android:foregroundServiceType="specialUse"
+      android:permission="android.permission.BIND_VPN_SERVICE">
+      <intent-filter>
+        <action android:name="android.net.VpnService" />
+      </intent-filter>
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="Parental website filter: applies a parent's website rules to DNS lookups on this device." />
+    </service>
+  </application>
+</manifest>

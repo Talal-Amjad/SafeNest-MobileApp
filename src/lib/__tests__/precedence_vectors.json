@@ -1,0 +1,66 @@
+{
+  "description": "Shared precedence test vectors. The SafeNest API's evaluate_host and every device integration must produce these results. Keep in sync with the server copy.",
+  "suites": [
+    {
+      "name": "most specific domain wins",
+      "rules": [
+        { "id": "r-block-yt", "kind": "domain", "value": "youtube.com", "action": "block" },
+        { "id": "r-allow-music", "kind": "domain", "value": "music.youtube.com", "action": "allow" }
+      ],
+      "cases": [
+        { "host": "youtube.com", "action": "block", "rule_id": "r-block-yt" },
+        { "host": "m.youtube.com", "action": "block", "rule_id": "r-block-yt" },
+        { "host": "music.youtube.com", "action": "allow", "rule_id": "r-allow-music" },
+        { "host": "a.music.youtube.com", "action": "allow", "rule_id": "r-allow-music" },
+        { "host": "example.com", "action": "allow", "rule_id": null }
+      ]
+    },
+    {
+      "name": "matches whole labels only",
+      "rules": [{ "id": "r-tube", "kind": "domain", "value": "tube.com", "action": "block" }],
+      "cases": [
+        { "host": "youtube.com", "action": "allow", "rule_id": null },
+        { "host": "tube.com", "action": "block", "rule_id": "r-tube" },
+        { "host": "my.tube.com", "action": "block", "rule_id": "r-tube" }
+      ]
+    },
+    {
+      "name": "nested allow inside block inside allow",
+      "rules": [
+        { "id": "r-g", "kind": "domain", "value": "google.com", "action": "block" },
+        { "id": "r-docs", "kind": "domain", "value": "docs.google.com", "action": "allow" },
+        { "id": "r-ads", "kind": "domain", "value": "ads.docs.google.com", "action": "block" }
+      ],
+      "cases": [
+        { "host": "mail.google.com", "action": "block", "rule_id": "r-g" },
+        { "host": "docs.google.com", "action": "allow", "rule_id": "r-docs" },
+        { "host": "x.ads.docs.google.com", "action": "block", "rule_id": "r-ads" }
+      ]
+    },
+    {
+      "name": "non-domain rules are ignored by domain enforcement",
+      "rules": [
+        { "id": "r-chan", "kind": "youtube_channel", "value": "@somecreator", "action": "block" },
+        { "id": "r-vid", "kind": "youtube_video", "value": "dQw4w9WgXcQ", "action": "block" }
+      ],
+      "cases": [{ "host": "youtube.com", "action": "allow", "rule_id": null }]
+    },
+    {
+      "name": "host normalisation",
+      "rules": [
+        { "id": "r-tt", "kind": "domain", "value": "tiktok.com", "action": "block" },
+        { "id": "r-idn", "kind": "domain", "value": "xn--bcher-kva.de", "action": "block" }
+      ],
+      "cases": [
+        { "host": "WWW.TikTok.COM.", "action": "block", "rule_id": "r-tt" },
+        { "host": "bücher.de", "action": "block", "rule_id": "r-idn" },
+        { "host": "shop.xn--bcher-kva.de", "action": "block", "rule_id": "r-idn" }
+      ]
+    },
+    {
+      "name": "empty policy allows everything",
+      "rules": [],
+      "cases": [{ "host": "anything.example", "action": "allow", "rule_id": null }]
+    }
+  ]
+}

@@ -8,6 +8,8 @@ import type {
   EnrollmentCompleteIn,
   EnrollmentCompleteOut,
   EnrollmentCreated,
+  EventIn,
+  EventsOut,
   HeartbeatIn,
   HeartbeatOut,
   Me,
@@ -61,5 +63,11 @@ export const deviceApi = {
       method: "POST",
       bearer: credential,
       body,
+    }),
+  events: (deviceId: string, credential: string, events: EventIn[]) =>
+    request<EventsOut>(`/devices/${encodeURIComponent(deviceId)}/events`, {
+      method: "POST",
+      bearer: credential,
+      body: { events },
     }),
 };

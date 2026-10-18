@@ -30,3 +30,14 @@ Pure logic lives outside React so it is unit-tested with Jest. Enforcement (task
 - **Privacy:** the child mode only ever handles domain names, and the app explains this on its transparency page. No passwords, messages, screenshots, keystrokes, audio or video.
 - **No covert mode:** the child app is visible and says what it does.
 - **Same precedence everywhere:** most specific domain wins, verified against the shared vectors in `src/lib/__tests__/precedence_vectors.json` (identical to the server's copy).
+
+## Android website filter (task 8)
+
+`modules/safenest-vpn` is a local Expo module (Kotlin). It starts an Android `VpnService` whose tunnel advertises a virtual DNS server (`10.111.222.2`) and routes only that address, so app traffic is untouched and only DNS lookups pass through SafeNest:
+
+- Blocked names get `0.0.0.0` / `::`; allowed ones go to 1.1.1.1 / 9.9.9.9 through sockets excluded from the VPN (`protect`). If no upstream answers, the lookup fails (fail closed).
+- Precedence is the same walk as `src/lib/policy.ts`, which is tested against the shared vectors.
+- A foreground notification keeps the filter visible. `onRevoke` stops it if the user turns the VPN off or another VPN starts, and the next check-in then reports it as off.
+- Blocked lookups (one per domain per minute) are drained by the JS check-in and sent to the API as events. The heartbeat reports the applied policy version only while the filter runs.
+
+Known gaps, to be covered by on-device testing and the threat model (task 12): IPv6-only DNS, Private DNS in strict mode, other VPN apps, and a child turning the VPN off in system settings (visible to the parent as "Rules not confirmed").

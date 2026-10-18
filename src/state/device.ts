@@ -4,16 +4,17 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { deviceApi, isUnauthorized, type Policy } from "@/api";
 import { KEYS, readJSON, remove, writeJSON, type DeviceState } from "@/storage/secure";
+import { vpn } from "../../modules/safenest-vpn";
 
 /**
  * Child-device lifecycle: link with a one-time code, check in, notice when a
  * parent removes the device.
  *
- * Phones don't enforce rules yet (tasks 8 and 9), so check-ins never claim a
- * policy was applied: the dashboard must not show "Rules up to date" for a
- * phone that isn't blocking anything. The reason goes in policy_error.
+ * Check-ins claim a policy version only while the Android filter is running.
+ * Otherwise (filter off, iOS, Expo Go) the dashboard must not show "Rules up
+ * to date", so applied_policy_version stays null and policy_error says why.
  */
-export const ENFORCEMENT_UNAVAILABLE = "Website blocking isn't available in the SafeNest phone app yet.";
+export const ENFORCEMENT_UNAVAILABLE = "Website blocking isn't available on this phone yet.";
 
 export const clientVersion = () => Constants.expoConfig?.version ?? "0.0.0";
 
@@ -61,14 +62,45 @@ export type CheckIn =
   | { kind: "removed" }
   | { kind: "error"; error: unknown };
 
-/** Fetch the current rules and send a heartbeat. A 401 means the parent removed this device. */
+export const FILTER_OFF = "Website blocking is turned off on this phone.";
+
+export function domainRules(policy: Policy) {
+  return policy.rules
+    .filter((r) => r.kind === "domain")
+    .map((r) => ({ id: r.id, value: r.value, action: r.action }));
+}
+
+/**
+ * Fetch the current rules, refresh the Android filter if it runs, report
+ * blocked lookups and send a heartbeat. The heartbeat claims a policy
+ * version only while the filter is actually enforcing it. A 401 means the
+ * parent removed this device.
+ */
 export async function checkIn(state: DeviceState): Promise<CheckIn> {
   try {
     const policy = await deviceApi.policy(state.deviceId, state.credential);
+    const enforcing = vpn.isRunning();
+    if (enforcing) await vpn.start(domainRules(policy));
+
+    const blocked = vpn.drainBlocked();
+    if (blocked.length > 0) {
+      await deviceApi.events(
+        state.deviceId,
+        state.credential,
+        blocked.slice(0, 100).map((b) => ({
+          event_id: Crypto.randomUUID(),
+          type: "navigation_blocked" as const,
+          domain: b.domain,
+          rule_id: b.ruleId || null,
+          occurred_at: new Date(b.at).toISOString(),
+        })),
+      );
+    }
+
     await deviceApi.heartbeat(state.deviceId, state.credential, {
       client_version: clientVersion(),
-      applied_policy_version: null,
-      policy_error: ENFORCEMENT_UNAVAILABLE,
+      applied_policy_version: enforcing ? policy.version : null,
+      policy_error: enforcing ? null : vpn.isSupported() ? FILTER_OFF : ENFORCEMENT_UNAVAILABLE,
     });
     return { kind: "ok", policy, at: new Date().toISOString() };
   } catch (error) {

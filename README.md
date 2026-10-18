@@ -13,7 +13,7 @@ It talks to the [SafeNest API](https://github.com/Talal-Amjad/SafeNest). The Win
 
 | Platform | Website enforcement | Notes |
 | --- | --- | --- |
-| Android | Local VPN DNS filter (`VpnService`), task 8 | Needs a native module and a development build; one VPN at a time on Android, so it conflicts with other VPN apps. |
+| Android | Local VPN that carries only DNS (`modules/safenest-vpn`), task 8 | Needs a development build (not Expo Go) and is not yet verified on devices. One VPN at a time on Android, so it conflicts with other VPN apps; Private DNS in "strict" mode bypasses it. |
 | iOS / iPadOS | Screen Time APIs (FamilyControls, ManagedSettings), task 9 | Requires Apple's Family Controls entitlement approval. Until then, iOS supports parent mode and linking only. |
 
 The app only claims enforcement on a platform once it has shipped and been tested on real devices.
@@ -41,7 +41,7 @@ The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXP
 | 5 | Activity feed and rules (block/allow per child) | ✅ |
 | 6 | Add device: one-time code with countdown and live "linked" | ✅ |
 | 7 | Child mode: link this phone, status, transparency page | ✅ |
-| 8 | Android enforcement: VPN-based DNS filter (native module) | |
+| 8 | Android enforcement: VPN-based DNS filter (native module) | ✅ code complete; needs a development build and on-device testing |
 | 9 | iOS enforcement: Screen Time APIs (entitlement-gated) | |
 | 10 | Push notifications for blocked-site alerts | |
 | 11 | Release: EAS build profiles, store listings, privacy labels | |
