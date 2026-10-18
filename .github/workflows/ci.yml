@@ -26,3 +26,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test -- --ci
+      # Bundling catches broken imports and assets that unit tests miss.
+      - name: Bundle Android and iOS JavaScript
+        run: |
+          npx expo export --platform android --output-dir dist/android
+          npx expo export --platform ios --output-dir dist/ios

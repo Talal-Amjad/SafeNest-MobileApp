@@ -28,6 +28,8 @@ npm run typecheck && npm run lint && npm test
 npm start            # Expo dev server: press a (Android), i (iOS) or w (web preview)
 ```
 
+The website filters are native modules, so they need a development build (`eas build --profile development`), not Expo Go. See [docs/releasing.md](docs/releasing.md).
+
 The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXPO_PUBLIC_API_URL` (for example `http://192.168.1.6:8000` to use a local SafeNest stack from a phone on the same Wi-Fi).
 
 ## Roadmap
@@ -44,5 +46,5 @@ The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXP
 | 8 | Android enforcement: VPN-based DNS filter (native module) | ✅ code complete; needs a development build and on-device testing |
 | 9 | iOS enforcement: Screen Time APIs (entitlement-gated) | ✅ code complete; off until Apple grants the Family Controls entitlement |
 | 10 | Push notifications for blocked-site alerts | |
-| 11 | Release: EAS build profiles, store listings, privacy labels | |
+| 11 | Release: EAS build profiles, store listings, privacy labels | ✅ |
 | 12 | End-to-end test and threat model | |
