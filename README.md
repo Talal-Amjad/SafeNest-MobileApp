@@ -35,7 +35,7 @@ The API URL comes from `app.json` → `expo.extra.apiUrl`, overridable with `EXP
 | # | Task | Status |
 | --- | --- | --- |
 | 1 | Bootstrap: Expo + TypeScript, theme tokens, lint, tests, CI | ✅ |
-| 2 | API client, typed errors, secure storage | |
+| 2 | API client, typed errors, secure storage | ✅ |
 | 3 | Parent sign-in and app shell | |
 | 4 | Parent home: children, devices, honest status | |
 | 5 | Activity feed and rules (block/allow per child) | |
