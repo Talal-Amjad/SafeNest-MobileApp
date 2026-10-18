@@ -41,3 +41,13 @@ Pure logic lives outside React so it is unit-tested with Jest. Enforcement (task
 - Blocked lookups (one per domain per minute) are drained by the JS check-in and sent to the API as events. The heartbeat reports the applied policy version only while the filter runs.
 
 Known gaps, to be covered by on-device testing and the threat model (task 12): IPv6-only DNS, Private DNS in strict mode, other VPN apps, and a child turning the VPN off in system settings (visible to the parent as "Rules not confirmed").
+
+## iOS website filter (task 9)
+
+`modules/safenest-screentime` (Swift) asks for Screen Time authorization for a child in Family Sharing, so a parent approves it on their own device. It then sets `ManagedSettingsStore.webContent.blockedByFilter = .specific(domains)`.
+
+- It is linked into every iOS build but used only when `extra.familyControls` is set by `app.plugin.js`, which also adds the entitlement. Enable the plugin only after Apple grants the entitlement, or signing fails.
+- Screen Time can only block domains, with their subdomains. `blockedDomainsForScreenTime` sends each blocked domain unless an allow rule at the same level overrides it. An allow nested inside a blocked domain (music.youtube.com inside youtube.com) can't be expressed, so it stays blocked on iOS.
+- iOS doesn't report individual blocked visits, so iPhones send no activity events. The heartbeat still reports the applied version while the filter is active.
+
+`src/lib/filter.ts` puts Android and iOS behind one interface, so check-ins and the child screen don't care which platform they run on.

@@ -4,14 +4,14 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { deviceApi, isUnauthorized, type Policy } from "@/api";
 import { KEYS, readJSON, remove, writeJSON, type DeviceState } from "@/storage/secure";
-import { vpn } from "../../modules/safenest-vpn";
+import { domainRules, filter } from "@/lib/filter";
 
 /**
  * Child-device lifecycle: link with a one-time code, check in, notice when a
  * parent removes the device.
  *
- * Check-ins claim a policy version only while the Android filter is running.
- * Otherwise (filter off, iOS, Expo Go) the dashboard must not show "Rules up
+ * Check-ins claim a policy version only while the platform filter runs
+ * (src/lib/filter.ts). Otherwise (filter off, unsupported build) the dashboard must not show "Rules up
  * to date", so applied_policy_version stays null and policy_error says why.
  */
 export const ENFORCEMENT_UNAVAILABLE = "Website blocking isn't available on this phone yet.";
@@ -64,12 +64,6 @@ export type CheckIn =
 
 export const FILTER_OFF = "Website blocking is turned off on this phone.";
 
-export function domainRules(policy: Policy) {
-  return policy.rules
-    .filter((r) => r.kind === "domain")
-    .map((r) => ({ id: r.id, value: r.value, action: r.action }));
-}
-
 /**
  * Fetch the current rules, refresh the Android filter if it runs, report
  * blocked lookups and send a heartbeat. The heartbeat claims a policy
@@ -79,10 +73,10 @@ export function domainRules(policy: Policy) {
 export async function checkIn(state: DeviceState): Promise<CheckIn> {
   try {
     const policy = await deviceApi.policy(state.deviceId, state.credential);
-    const enforcing = vpn.isRunning();
-    if (enforcing) await vpn.start(domainRules(policy));
+    const enforcing = filter.isRunning();
+    if (enforcing) await filter.start(domainRules(policy));
 
-    const blocked = vpn.drainBlocked();
+    const blocked = filter.drainBlocked();
     if (blocked.length > 0) {
       await deviceApi.events(
         state.deviceId,
@@ -100,7 +94,7 @@ export async function checkIn(state: DeviceState): Promise<CheckIn> {
     await deviceApi.heartbeat(state.deviceId, state.credential, {
       client_version: clientVersion(),
       applied_policy_version: enforcing ? policy.version : null,
-      policy_error: enforcing ? null : vpn.isSupported() ? FILTER_OFF : ENFORCEMENT_UNAVAILABLE,
+      policy_error: enforcing ? null : filter.isSupported() ? FILTER_OFF : ENFORCEMENT_UNAVAILABLE,
     });
     return { kind: "ok", policy, at: new Date().toISOString() };
   } catch (error) {

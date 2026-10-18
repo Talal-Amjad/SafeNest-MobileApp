@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Redirect, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { AppState, RefreshControl, Switch, View } from "react-native";
-import { vpn } from "../../modules/safenest-vpn";
+import { AppState, Platform, RefreshControl, Switch, View } from "react-native";
 import { errorMessage, type Policy } from "@/api";
 import { Badge, Body, Button, Card, Field, Label, Loading, Notice, Screen, Title } from "@/components/ui";
 import { formatCode, isCompleteCode } from "@/lib/code";
 import { timeAgo } from "@/lib/status";
-import { checkIn, defaultDeviceName, domainRules, ENFORCEMENT_UNAVAILABLE, linkDevice, loadDevice } from "@/state/device";
+import { domainRules, filter } from "@/lib/filter";
+import { checkIn, defaultDeviceName, ENFORCEMENT_UNAVAILABLE, linkDevice, loadDevice } from "@/state/device";
 import { useSession } from "@/state/session";
 import { usePalette } from "@/theme";
 
@@ -120,7 +120,7 @@ function LinkedStatus({ onRemoved }: { onRemoved: () => void }) {
   return (
     <Screen refresh={<RefreshControl refreshing={sync.isFetching} onRefresh={() => void sync.refetch()} tintColor={c.primary} />}>
       <Title>Linked to {s.childName}</Title>
-      {vpn.isSupported() ? (
+      {filter.isSupported() ? (
         <Protection policy={result?.kind === "ok" ? result.policy : null} onChange={() => void sync.refetch()} />
       ) : (
         <Notice tone="warn">
@@ -156,10 +156,10 @@ function LinkedStatus({ onRemoved }: { onRemoved: () => void }) {
   );
 }
 
-/** Android only: the on-device website filter (a local VPN that carries only DNS). */
+/** The on-device website filter: a DNS-only VPN on Android, Screen Time on iOS. */
 function Protection({ policy, onChange }: { policy: Policy | null; onChange: () => void }) {
   const c = usePalette();
-  const [on, setOn] = useState(vpn.isRunning());
+  const [on, setOn] = useState(filter.isRunning());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -169,10 +169,10 @@ function Protection({ policy, onChange }: { policy: Policy | null; onChange: () 
     try {
       if (next) {
         if (!policy) throw new Error("Waiting for the rules from SafeNest. Try again in a moment.");
-        if (!(await vpn.prepare())) throw new Error("Android needs your permission to start SafeNest's filter.");
-        await vpn.start(domainRules(policy));
+        if (!(await filter.prepare())) throw new Error("SafeNest needs your permission to filter websites on this phone.");
+        await filter.start(domainRules(policy));
       } else {
-        await vpn.stop();
+        await filter.stop();
       }
       setOn(next);
       onChange();
@@ -191,8 +191,8 @@ function Protection({ policy, onChange }: { policy: Policy | null; onChange: () 
       </View>
       <Body muted>
         {on
-          ? "On: the parent's rules apply in every app on this phone. A key icon shows in the status bar."
-          : "Off: nothing is blocked on this phone. Turning it on asks Android for VPN permission; SafeNest uses it only to check website names."}
+          ? Platform.OS === "ios" ? "On: the parent's rules apply in Safari and apps that show web pages." : "On: the parent's rules apply in every app on this phone. A key icon shows in the status bar."
+          : Platform.OS === "ios" ? "Off: nothing is blocked on this phone. Turning it on asks a parent to approve Screen Time access." : "Off: nothing is blocked on this phone. Turning it on asks Android for VPN permission; SafeNest uses it only to check website names."}
       </Body>
       {error && <Notice tone="danger">{error}</Notice>}
     </Card>

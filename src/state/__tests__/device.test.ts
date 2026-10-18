@@ -6,8 +6,9 @@ const mockRemove = jest.fn<(k: string) => Promise<void>>(async () => undefined);
 const mockEvents = jest.fn<(...a: unknown[]) => Promise<unknown>>(async () => ({ accepted: 1 }));
 const mockVpn = { running: false, start: jest.fn(async (_rules: unknown) => undefined), blocked: [] as unknown[] };
 
-jest.mock("../../../modules/safenest-vpn", () => ({
-  vpn: {
+jest.mock("@/lib/filter", () => ({
+  domainRules: jest.requireActual<typeof import("@/lib/filter")>("@/lib/filter").domainRules,
+  filter: {
     isSupported: () => true,
     isRunning: () => mockVpn.running,
     start: (...a: unknown[]) => (mockVpn.start as (...x: unknown[]) => Promise<void>)(...a),

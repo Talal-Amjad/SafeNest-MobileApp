@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import { blockedDomainsForScreenTime } from "../filter";
 import { compile, decide, type PolicyRule } from "../policy";
 import vectors from "./precedence_vectors.json";
 
@@ -19,4 +20,17 @@ describe("shared precedence vectors", () => {
       });
     }
   }
+});
+
+describe("Screen Time domain list", () => {
+  it("sends blocked domains only, minus same-level allows", () => {
+    expect(
+      blockedDomainsForScreenTime([
+        { id: "1", value: "YouTube.com", action: "block" },
+        { id: "2", value: "music.youtube.com", action: "allow" },
+        { id: "3", value: "tiktok.com", action: "block" },
+        { id: "4", value: "khanacademy.org", action: "allow" },
+      ]),
+    ).toEqual(["tiktok.com", "youtube.com"]);
+  });
 });
